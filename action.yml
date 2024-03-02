@@ -23,7 +23,6 @@ runs:
       with:
         repository: rusinikita/changes
         excludes: prerelease, draft
-        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check for binary cash
       id: cache-binary
