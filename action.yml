@@ -34,7 +34,7 @@ runs:
     - name: Install changes binary
       if: steps.cache-binary.outputs.cache-hit != 'true'
       shell: bash
-      run: changes-binary-install.sh -b ./bin ${{ inputs.version }}
+      run: ./changes-binary-install.sh -b ./bin ${{ inputs.version }}
 
     - name: Run changes check
       shell: bash
