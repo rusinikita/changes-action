@@ -14,11 +14,11 @@ inputs:
     required: false
     default: 'false'
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Get latest version
       id: latest-changes-tag
-      if: ${{ inputs.version == "latest" }}
+      if: ${{ inputs.version == 'latest' }}
       uses: pozetroninc/github-action-get-latest-release@master
       with:
         repository: rusinikita/changes
@@ -30,7 +30,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ./bin
-        key: changes-binary-${{ runner.os }}-${{ inputs.version == "latest" && steps.latest-changes-tag.outputs.release || inputs.version }}
+        key: changes-binary-${{ runner.os }}-${{ inputs.version == 'latest' && steps.latest-changes-tag.outputs.release || inputs.version }}
 
     - name: Print cache value
       shell: bash
