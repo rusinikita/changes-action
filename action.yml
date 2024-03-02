@@ -1,0 +1,57 @@
+name: 'Run changes check'
+description: 'Official changes action with Pull Request message posting for found issues'
+inputs:
+  version:
+    description: 'version of changes tool'
+    required: false
+    default: 'latest'
+  config:
+    description: 'config file path, default is .changes.[yaml,toml,json]'
+    required: false
+    default: ''
+  pr-message:
+    description: 'should action post result message in Pull Request'
+    required: false
+    default: 'false'
+runs:
+  using: "composite"
+  steps:
+    - name: Get latest version
+      id: latest-changes-tag
+      if: ${{ inputs.version == "latest" }}
+      uses: pozetroninc/github-action-get-latest-release@master
+      with:
+        repository: rusinikita/changes
+        excludes: prerelease, draft
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check for binary cash
+      id: cache-binary
+      uses: actions/cache@v4
+      with:
+        path: ./bin
+        key: changes-binary-${{ runner.os }}-${{ inputs.version == "latest" && steps.latest-changes-tag.outputs.release || inputs.version }}
+
+    - name: Print cache value
+      shell: bash
+      run: echo $CACHE_STATE
+      env:
+        $CACHE_STATE: ${{ steps.cache-binary.outputs.cache-hit == 'true' && 'changes binary restored from cache' || 'changes binary not found - downloading' }}
+
+    - name: Install changes binary
+      if: steps.cache-binary.outputs.cache-hit != 'true'
+      shell: bash
+      run: ./install.sh -b ./bin ${{ inputs.version }}
+
+    - name: Run changes check
+      shell: bash
+      run: ./bin/changes check ${{ inputs.pr-message == 'true' && '--output=changes-message.md' || '' }}
+
+    - name: Post check result PR message
+      if: ${{ github.event_name == 'pull_request' && inputs.pr-message == 'true' }}
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: changes-message.md
+        comment_tag: changes-check
+        mode: recreate
+        create_if_not_exists: true
