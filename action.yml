@@ -31,16 +31,10 @@ runs:
         path: ./bin
         key: changes-binary-${{ runner.os }}-${{ inputs.version == 'latest' && steps.latest-changes-tag.outputs.release || inputs.version }}
 
-    - name: Print cache value
-      shell: bash
-      run: echo $CACHE_STATE
-      env:
-        $CACHE_STATE: ${{ steps.cache-binary.outputs.cache-hit == 'true' && 'changes binary restored from cache' || 'changes binary not found - downloading' }}
-
     - name: Install changes binary
       if: steps.cache-binary.outputs.cache-hit != 'true'
       shell: bash
-      run: ./install.sh -b ./bin ${{ inputs.version }}
+      run: changes-binary-install.sh -b ./bin ${{ inputs.version }}
 
     - name: Run changes check
       shell: bash
