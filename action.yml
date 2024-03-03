@@ -28,17 +28,17 @@ runs:
       id: cache-binary
       uses: actions/cache@v4
       with:
-        path: ./bin
+        path: ./changes-bin
         key: changes-binary-${{ runner.os }}-${{ inputs.version == 'latest' && steps.latest-changes-tag.outputs.release || inputs.version }}
 
     - name: Install changes binary
       if: steps.cache-binary.outputs.cache-hit != 'true'
       shell: bash
-      run: ./changes-binary-install.sh -b ./bin ${{ inputs.version }}
+      run: ${{ github.action_path }}/changes-binary-install.sh -b ./changes-bin ${{ inputs.version }}
 
     - name: Run changes check
       shell: bash
-      run: ./bin/changes check ${{ inputs.pr-message == 'true' && '--output=changes-message.md' || '' }}
+      run: ./changes-bin/changes check ${{ inputs.pr-message == 'true' && '--output=changes-message.md' || '' }}
 
     - name: Post check result PR message
       if: ${{ github.event_name == 'pull_request' && inputs.pr-message == 'true' }}
