@@ -1,5 +1,10 @@
-name: 'Run changes check'
+name: 'PR commits and diff validation'
+author: 'Nikita Rusin'
 description: 'Official changes action with Pull Request message posting for found issues'
+branding:
+  icon: 'message-circle'
+  color: 'blue'
+
 inputs:
   version:
     description: 'version of changes tool'
