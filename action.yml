@@ -41,7 +41,7 @@ runs:
       run: ./changes-bin/changes check ${{ inputs.pr-message == 'true' && '--output=changes-message.md' || '' }}
 
     - name: Post check result PR message
-      if: ${{ github.event_name == 'pull_request' && inputs.pr-message == 'true' }}
+      if: ${{ !cancelled() && github.event_name == 'pull_request' && inputs.pr-message == 'true' }}
       uses: thollander/actions-comment-pull-request@v2
       with:
         filePath: changes-message.md
